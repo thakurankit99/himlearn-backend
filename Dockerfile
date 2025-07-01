@@ -1,5 +1,8 @@
 FROM node:18-alpine
 
+# Install cron and curl
+RUN apk add --no-cache curl dcron
+
 # Create app directory
 WORKDIR /usr/src/app
 
@@ -13,6 +16,15 @@ RUN npm ci --only=production
 # Bundle app source
 COPY . .
 
+# Make keep-alive script executable
+RUN chmod +x /usr/src/app/keep-alive.sh
+
+# Create cron file
+RUN echo "*/3 * * * * /usr/src/app/keep-alive.sh" > /etc/crontabs/root
+
+# Create logs directory
+RUN mkdir -p /usr/src/app/logs
+
 # Set environment variables
 ENV NODE_ENV=production
 ENV PORT=5000
@@ -20,5 +32,9 @@ ENV PORT=5000
 # Expose the port the app runs on
 EXPOSE 5000
 
+# Create startup script
+RUN echo "#!/bin/sh\ncrond -b\nnode server.js" > /usr/src/app/start.sh
+RUN chmod +x /usr/src/app/start.sh
+
 # Command to run the application
-CMD ["node", "server.js"] 
+CMD ["/usr/src/app/start.sh"] 
