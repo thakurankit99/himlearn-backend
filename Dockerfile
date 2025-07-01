@@ -16,7 +16,8 @@ RUN npm ci --only=production
 # Bundle app source
 COPY . .
 
-# Make keep-alive script executable
+# Make scripts executable
+RUN chmod +x /usr/src/app/start.sh
 RUN chmod +x /usr/src/app/keep-alive.sh
 
 # Create cron file
@@ -31,10 +32,6 @@ ENV PORT=5000
 
 # Expose the port the app runs on
 EXPOSE 5000
-
-# Create startup script
-RUN echo "#!/bin/sh\ncrond -b\nnode server.js" > /usr/src/app/start.sh
-RUN chmod +x /usr/src/app/start.sh
 
 # Command to run the application
 CMD ["/usr/src/app/start.sh"] 
