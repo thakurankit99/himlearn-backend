@@ -34,7 +34,8 @@ const corsOptions = {
         // List of allowed origins
         const allowedOrigins = [
             'http://localhost:3000',                   // Local frontend
-            'https://himlearning.vercel.app',          // Vercel deployment
+            'https://www.himlearning.cfd',             // New custom domain
+            'https://himlearning.cfd',                 // New custom domain without www
             process.env.FRONTEND_URL || '*'            // Custom frontend URL from env
         ];
         
