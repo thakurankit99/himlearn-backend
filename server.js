@@ -25,11 +25,20 @@ const app = express();
 app.use(express.json({ limit: '50mb' }))
 app.use(express.urlencoded({ limit: '50mb', extended: true }))
 
+// Log all request origins for debugging
+app.use((req, res, next) => {
+    console.log(`Request origin: ${req.headers.origin || 'No origin header'}`);
+    next();
+});
+
 // Configure CORS with proper options for production
 const corsOptions = {
     origin: function (origin, callback) {
         // Allow requests with no origin (like mobile apps, curl requests)
-        if (!origin) return callback(null, true);
+        if (!origin) {
+            console.log('Request with no origin allowed');
+            return callback(null, true);
+        }
         
         // List of allowed origins
         const allowedOrigins = [
@@ -37,18 +46,25 @@ const corsOptions = {
             'https://www.himlearning.cfd',             // New custom domain
             'https://himlearning.cfd',                 // New custom domain without www
             'https://api.himlearning.cfd',             // API domain
+            'http://www.himlearning.cfd',              // HTTP version
+            'http://himlearning.cfd',                  // HTTP version without www
             process.env.FRONTEND_URL || '*'            // Custom frontend URL from env
         ];
         
-        if (allowedOrigins.indexOf(origin) !== -1 || allowedOrigins.includes('*')) {
+        // For development/debugging, allow all origins temporarily
+        const allowAll = process.env.NODE_ENV !== 'production' || process.env.ALLOW_ALL_ORIGINS === 'true';
+        
+        if (allowAll || allowedOrigins.indexOf(origin) !== -1 || allowedOrigins.includes('*')) {
+            console.log(`Origin ${origin} allowed`);
             callback(null, true);
         } else {
+            console.log(`Origin ${origin} rejected`);
             callback(new Error('Not allowed by CORS'));
         }
     },
     credentials: true,
-    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With']
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept', 'Origin']
 };
 
 app.use(cors(corsOptions));
