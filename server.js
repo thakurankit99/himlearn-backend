@@ -36,6 +36,7 @@ const corsOptions = {
             'http://localhost:3000',                   // Local frontend
             'https://www.himlearning.cfd',             // New custom domain
             'https://himlearning.cfd',                 // New custom domain without www
+            'https://api.himlearning.cfd',             // API domain
             process.env.FRONTEND_URL || '*'            // Custom frontend URL from env
         ];
         

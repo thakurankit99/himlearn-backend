@@ -4,7 +4,7 @@
 # This is executed by cron every 3 minutes
 
 # Health endpoint URL
-HEALTH_URL="https://himlearnings.ankit.news/api/health"
+HEALTH_URL="https://api.himlearning.cfd/api/health"
 
 # Current timestamp for logging
 TIMESTAMP=$(date +"%Y-%m-%d %H:%M:%S")
